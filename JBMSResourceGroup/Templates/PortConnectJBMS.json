@@ -561,6 +561,11 @@
                   "connectionId": "[resourceId('Microsoft.Web/connections','smtp')]",
                   "connectionName": [ "smtp" ],
                   "id": "[reference('Microsoft.Web/connections/smtp', '2015-08-01-preview').api.id]"
+                },
+                "sql": {
+                  "connectionId": "[resourceId('Microsoft.Web/connections','sql')]",
+                  "connectionName": [ "sql" ],
+                  "id": "[reference('Microsoft.Web/connections/sql', '2015-08-01-preview').api.id]"
                 }
               },
               "type": "Object"
