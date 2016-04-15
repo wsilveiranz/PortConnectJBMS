@@ -1,0 +1,5 @@
+C:\Projects\PortConnect\JBMS\JBMS\bin\Debug\JBMS.dacpac
+C:\Projects\PortConnect\JBMS\JBMS\bin\Debug\JBMS.dll
+C:\Projects\PortConnect\JBMS\JBMS\bin\Debug\JBMS.pdb
+C:\Projects\PortConnect\JBMS\JBMS\obj\Debug\JBMS.dll
+C:\Projects\PortConnect\JBMS\JBMS\obj\Debug\JBMS.pdb

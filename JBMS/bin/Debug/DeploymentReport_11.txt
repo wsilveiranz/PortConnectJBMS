@@ -1,0 +1,28 @@
+﻿** Highlights
+     Tables that will be rebuilt
+       None
+     Clustered indexes that will be dropped
+       None
+     Clustered indexes that will be created
+       None
+     Possible data issues
+       None
+
+** User actions
+     Create
+       [dbo].[JBMSAttachment] (Table)
+       [dbo].[JBMSConfiguration] (Table)
+       [dbo].[JBMSExtMessaage] (Table)
+       [dbo].[JBMSMessage] (Table)
+       [dbo].[JBMSPolling] (Table)
+       Default Constraint: unnamed constraint on [dbo].[JBMSExtMessaage] (Default Constraint)
+       Default Constraint: unnamed constraint on [dbo].[JBMSMessage] (Default Constraint)
+       Default Constraint: unnamed constraint on [dbo].[JBMSMessage] (Default Constraint)
+       Default Constraint: unnamed constraint on [dbo].[JBMSMessage] (Default Constraint)
+       Default Constraint: unnamed constraint on [dbo].[JBMSPolling] (Default Constraint)
+       [dbo].[GetExtMessage] (Procedure)
+       [dbo].[PollingJBMS] (Procedure)
+       [dbo].[SaveJBMSMessage] (Procedure)
+       [dbo].[UpdatePolling] (Procedure)
+
+** Supporting actions

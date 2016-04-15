@@ -1,0 +1,21 @@
+﻿** Highlights
+     Tables that will be rebuilt
+       None
+     Clustered indexes that will be dropped
+       None
+     Clustered indexes that will be created
+       None
+     Possible data issues
+       None
+
+** User actions
+     Alter
+       [dbo].[JBMSPolling] (Table)
+       [dbo].[Polling] (Procedure)
+       [dbo].[PollingJBMS] (Procedure)
+     Create
+       [dbo].[SaveJBMSMessage] (Procedure)
+
+** Supporting actions
+     Refresh
+       [dbo].[UpdatePolling] (Procedure)
