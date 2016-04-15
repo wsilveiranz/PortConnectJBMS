@@ -9,16 +9,16 @@
       "value": "************@theta.co.nz"
     },
     "logicAppName": {
-      "value": "JBMSlogic"
+      "value": "JBMSPollingManager"
     },
     "mailAppName": {
-      "value": "JBMSMail"
+      "value": "JBMSMailManager"
     },
     "svcPlanName": {
       "value": "ServicePlan"
     },
     "jbmsSqlServerName": {
-      "value": "jbmssqlserver"
+      "value": "jbmssqlserverws"
     },
     "jbmsSqlServerPort": {
       "value": "1433"

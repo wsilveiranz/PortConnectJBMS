@@ -8,8 +8,8 @@ Param(
     [switch] $UploadArtifacts,
     [string] $StorageAccountName,
     [string] $StorageContainerName = $ResourceGroupName.ToLowerInvariant() + '-stageartifacts',
-    [string] $TemplateFile = '..\Templates\LogicApp.json',
-    [string] $TemplateParametersFile = '..\Templates\LogicApp.parameters.json',
+    [string] $TemplateFile = '..\Templates\PortConnectJBMS.json',
+    [string] $TemplateParametersFile = '..\Templates\PortConnectJBMS.parameters.json',
     [string] $ArtifactStagingDirectory = '..\bin\Debug\staging',
     [string] $DSCSourceFolder = '..\DSC'
 )
