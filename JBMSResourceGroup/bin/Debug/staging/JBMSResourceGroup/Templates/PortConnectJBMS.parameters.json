@@ -6,7 +6,7 @@
       "value": "PORTCONNECT"
     },
     "submitterEmail": {
-      "value": "************@theta.co.nz"
+      "value": "wagner.silveira@theta.co.nz"
     },
     "logicAppName": {
       "value": "JBMSPollingManager"
@@ -27,10 +27,10 @@
       "value": "JBMSdb"
     },
     "jbmsSqlServerAdminLogin": {
-      "value": "************"
+      "value": "wsilveiranz"
     },
     "jbmsSqlServerAdminLoginPassword": {
-      "value": "**************"
+      "value": "magick$01"
     },
     "jbmsLocalIpAddress": {
       "value": "210.54.148.61"
@@ -42,7 +42,7 @@
       "value": "smtp.office365.com"
     },
     "smtpUserName": {
-      "value": "***************@theta.co.nz"
+      "value": "wagner.silveira@theta.co.nz"
     },
     "smtpPort": {
       "value": "587"
@@ -51,7 +51,10 @@
       "value": "True"
     },
     "smtpPassword": {
-      "value": "*************"
-    }
+      "value": "Theta$95"
+    },
+      "workflowSkuName": {
+          "value": "Standard"
+      }
   }
 }
