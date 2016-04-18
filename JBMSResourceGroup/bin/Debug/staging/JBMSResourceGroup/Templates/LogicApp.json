@@ -1,0 +1,674 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "outputs": { },
+  "parameters": {
+    "submitter": {
+      "type": "string",
+      "minLength": 1
+    },
+    "submitterEmail": {
+      "type": "string",
+      "minLength": 1
+    },
+    "logicAppName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mailAppName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "svcPlanName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "skuName": {
+      "type": "string",
+      "defaultValue": "S1",
+      "allowedValues": [
+        "F1",
+        "D1",
+        "B1",
+        "B2",
+        "B3",
+        "S1",
+        "S2",
+        "S3",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "metadata": {
+        "description": "Describes plan's pricing tier and instance size. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
+      }
+    },
+    "skuCapacity": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "metadata": {
+        "description": "Describes plan's instance count"
+      }
+    },
+    "workflowSkuName": {
+      "type": "string",
+      "defaultValue": "Free",
+      "allowedValues": [
+        "Free",
+        "Basic",
+        "Standard",
+        "Premium"
+      ]
+    },
+    "jbmsSqlConnectionName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "jbmsSqlServerName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "jbmsSqlServerPort": {
+      "type": "string",
+      "minLength": 1
+    },
+    "jbmsSqlServerAdminLogin": {
+      "type": "string",
+      "minLength": 1
+    },
+    "jbmsSqlServerAdminLoginPassword": {
+      "type": "securestring"
+    },
+    "jbmsdbName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "jbmsdbCollation": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "SQL_Latin1_General_CP1_CI_AS"
+    },
+    "jbmsdbEdition": {
+      "type": "string",
+      "defaultValue": "Basic",
+      "allowedValues": [
+        "Basic",
+        "Standard",
+        "Premium"
+      ]
+    },
+    "jbmsdbRequestedServiceObjectiveName": {
+      "type": "string",
+      "defaultValue": "Basic",
+      "allowedValues": [
+        "Basic",
+        "S0",
+        "S1",
+        "S2",
+        "P1",
+        "P2",
+        "P3"
+      ],
+      "metadata": {
+        "description": "Describes the performance level for Edition"
+      }
+    },
+    "jbmsLocalIpAddress": {
+      "type": "string",
+      "minLength": 1
+    },
+    "jbmsAzureIpAddress": {
+      "type": "string",
+      "minLength": 1
+    },
+    "smtpConnectionName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "smtpServerAddress": {
+      "type": "string",
+      "minLength": 1
+    },
+    "smtpUserName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "smtpPort": {
+      "type": "string",
+      "minLength": 1
+    },
+    "smtpEnableSSL": {
+      "type": "string",
+      "minLength": 1
+    },
+    "smtpPassword": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-08-01",
+      "name": "[parameters('svcPlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "JBMS Service Plan"
+      },
+      "sku": {
+        "name": "[parameters('skuName')]",
+        "capacity": "[parameters('skuCapacity')]"
+      },
+      "properties": {
+        "name": "[parameters('svcPlanName')]"
+      }
+    },
+    {
+      "type": "Microsoft.Web/connections",
+      "apiVersion": "2015-08-01-preview",
+      "location": "[resourceGroup().location]",
+      "name": "[parameters('jbmsSqlConnectionName')]",
+      "tags": {
+        "displayName": "JBMS SQL Connection String"
+      },
+      "properties": {
+        "api": {
+          "id": "[concat('subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/sql')]"
+        },
+        "displayName": "[parameters('jbmsSqlConnectionName')]",
+        "parameterValues": {
+          "sqlConnectionString": "[concat('Server=tcp:', parameters('jbmsSqlServerName'), '.database.windows.net,', parameters('jbmsSqlServerPort'), ';Database=', parameters('jbmsdbName'), ';User ID=', parameters('jbmsSqlServerAdminLogin'), '@', parameters('jbmsSqlServerName'), ';Password=', parameters('jbmsSqlServerAdminLoginPassword'), ';Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Web/connections",
+      "apiVersion": "2015-08-01-preview",
+      "location": "[resourceGroup().location]",
+      "name": "[parameters('smtpConnectionName')]",
+      "tags": {
+        "displayName": "JBMS Email Connection"
+      },
+      "properties": {
+        "api": {
+          "id": "[concat('subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/smtp')]"
+        },
+        "displayName": "[parameters('smtpConnectionName')]",
+        "parameterValues": {
+          "serverAddress": "[parameters('smtpServerAddress')]",
+          "userName": "[parameters('smtpUserName')]",
+          "port": "[parameters('smtpPort')]",
+          "enableSSL": "[parameters('smtpEnableSSL')]",
+          "password": "[parameters('smtpPassword')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Logic/workflows",
+      "apiVersion": "2015-08-01-preview",
+      "name": "[parameters('logicAppName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "JBMS LogicApp"
+      },
+      "properties": {
+        "sku": {
+          "name": "[parameters('workflowSkuName')]",
+          "plan": {
+            "id": "[concat(resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('svcPlanName'))]"
+          }
+        },
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2015-08-01-preview/workflowdefinition.json#",
+          "actions": {
+            "01_Get_Next_Polling_Item": {
+              "conditions": [ ],
+              "inputs": {
+                "body": {
+                  "Submitter": "[parameters('submitter')]"
+                },
+                "host": {
+                  "api": {
+                    "runtimeUrl": "https://logic-apis-australiaeast.azure-apim.net/apim/sql"
+                  },
+                  "connection": {
+                    "name": "@parameters('$connections')['jbmssql']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/datasets/default/procedures/@{encodeURIComponent(encodeURIComponent(string('[dbo].[sp_PollingJBMS]')))}"
+              },
+              "type": "ApiConnection"
+            },
+            "03_Get_Next_Message_Item": {
+              "conditions": [
+                {
+                  "expression": "@not(equals(body('01_Get_Next_Polling_Item')['ReturnCode'], 0))"
+                },
+                {
+                  "dependsOn": "01_Get_Next_Polling_Item"
+                }
+              ],
+              "inputs": {
+                "body": {
+                  "PrevMessageID": "@{body('01_Get_Next_Polling_Item')['ResultSets']['Table1'][0]['MessageID']}"
+                },
+                "host": {
+                  "api": {
+                    "runtimeUrl": "https://logic-apis-australiaeast.azure-apim.net/apim/sql"
+                  },
+                  "connection": {
+                    "name": "@parameters('$connections')['jbmssql']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/datasets/default/procedures/@{encodeURIComponent(encodeURIComponent(string('[dbo].[sp_GetExtMessage]')))}"
+              },
+              "type": "ApiConnection"
+            },
+            "11_Insert_Message_Item": {
+              "conditions": [
+                {
+                  "expression": "@not(equals(body('03_Get_Next_Message_Item')['ReturnCode'], 0))"
+                },
+                {
+                  "dependsOn": "03_Get_Next_Message_Item"
+                }
+              ],
+              "inputs": {
+                "body": {
+                  "MessageID": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['mailboxMsgId']}",
+                  "CustomerReference": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['customerReference']}",
+                  "DocumentID": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['docId']}",
+                  "Mailbox": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['mailbox']}",
+                  "MessageName": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['messageName']}",
+                  "PartnerID": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['partner']}",
+                  "ReceivedDateTime": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['receivedDate']}",
+                  "Submitter": "[parameters('submitter')]",
+                  "href": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['href']}",
+                  "AttachmentDocument": "@{decodeBase64(body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['value'])}"
+                },
+                "host": {
+                  "api": {
+                    "runtimeUrl": "https://logic-apis-australiaeast.azure-apim.net/apim/sql"
+                  },
+                  "connection": {
+                    "name": "@parameters('$connections')['jbmssql']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/datasets/default/procedures/@{encodeURIComponent(encodeURIComponent(string('[dbo].[sp_SaveJBMSMessage]')))}"
+              },
+              "type": "ApiConnection"
+            },
+            "13_Update_Polling_Item": {
+              "conditions": [
+                {
+                  "dependsOn": "11_Insert_Message_Item"
+                }
+              ],
+              "inputs": {
+                "body": {
+                  "EntryID": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['mailboxMsgId']}",
+                  "LastUpdatedDateTime": "@{body('01_Get_Next_Polling_Item')['ResultSets']['Table1'][0]['CurrentDateTime']}",
+                  "MessageID": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['mailboxMsgId']}",
+                  "SenderReference": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['customerReference']}",
+                  "Status": "Processed",
+                  "Submitter": "@{body('01_Get_Next_Polling_Item')['ResultSets']['Table1'][0]['Submitter']}"
+                },
+                "host": {
+                  "api": {
+                    "runtimeUrl": "https://logic-apis-australiaeast.azure-apim.net/apim/sql"
+                  },
+                  "connection": {
+                    "name": "@parameters('$connections')['jbmssql']['connectionId']"
+                  }
+                },
+                "method": "patch",
+                "path": "/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(string('[dbo].[JBMSPolling]')))}/items/@{encodeURIComponent(encodeURIComponent(string(body('01_Get_Next_Polling_Item')['ReturnCode'])))}"
+              },
+              "type": "ApiConnection"
+            },
+            "15_Call_JBMS_Logic": {
+              "conditions": [
+                {
+                  "dependsOn": "13_Update_Polling_Item"
+                }
+              ],
+              "inputs": {
+                "method": "POST",
+                "uri": "https://prod-07.australiaeast.logic.azure.com:443/workflows/a9226f3c4f71446690e360d18fbc55bd/triggers/manual/run?api-version=2015-08-01-preview&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=jQucIXsgdUuq7GOFu_L888I1JHiUUUf1mxLT_W7EAMY"
+              },
+              "type": "Http",
+              "until": {
+                "conditions": [
+                  {
+                    "expression": "@not(empty(string(action().outputs.body)))"
+                  }
+                ],
+                "limit": {
+                  "count": "3",
+                  "timeout": "PT10M"
+                }
+              }
+            },
+            "17_Response": {
+              "conditions": [
+                {
+                  "dependsOn": "13_Update_Polling_Item"
+                }
+              ],
+              "inputs": {
+                "body": "@body('03_Get_Next_Message_Item')['ReturnCode']",
+                "statusCode": 200
+              },
+              "type": "Response"
+            },
+            "21_Update_Polling_Item": {
+              "conditions": [
+                {
+                  "expression": "@equals(actions('11_Insert_Message_Item').status, 'Skipped')"
+                }
+              ],
+              "inputs": {
+                "body": {
+                  "EntryID": "@{body('01_Get_Next_Polling_Item')['ResultSets']['Table1'][0]['EntryID']}",
+                  "LastUpdatedDateTime": "@{body('01_Get_Next_Polling_Item')['ResultSets']['Table1'][0]['CurrentDateTime']}",
+                  "MessageID": "@{body('01_Get_Next_Polling_Item')['ResultSets']['Table1'][0]['MessageID']}",
+                  "SenderReference": "@{body('01_Get_Next_Polling_Item')['ResultSets']['Table1'][0]['SenderReference']}",
+                  "Status": "Processed",
+                  "Submitter": "@{body('01_Get_Next_Polling_Item')['ResultSets']['Table1'][0]['Submitter']}"
+                },
+                "host": {
+                  "api": {
+                    "runtimeUrl": "https://logic-apis-australiaeast.azure-apim.net/apim/sql"
+                  },
+                  "connection": {
+                    "name": "@parameters('$connections')['jbmssql']['connectionId']"
+                  }
+                },
+                "method": "patch",
+                "path": "/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(string('[dbo].[JBMSPolling]')))}/items/@{encodeURIComponent(encodeURIComponent(string(body('01_Get_Next_Polling_Item')['ReturnCode'])))}"
+              },
+              "type": "ApiConnection"
+            },
+            "23_Response": {
+              "conditions": [
+                {
+                  "dependsOn": "21_Update_Polling_Item"
+                }
+              ],
+              "inputs": {
+                "body": "@body('03_Get_Next_Message_Item')['ReturnCode']",
+                "statusCode": 200
+              },
+              "type": "Response"
+            }
+          },
+          "contentVersion": "1.0.0.0",
+          "outputs": { },
+          "parameters": {
+            "$connections": {
+              "type": "Object",
+              "defaultValue": {
+                "jbmssql": {
+                  "connectionId": "[resourceId('Microsoft.Web/connections', parameters('jbmsSqlConnectionName'))]",
+                  "connectionName": [ "jbmssql" ],
+                  "id": "[reference(concat('Microsoft.Web/connections/', parameters('jbmsSqlConnectionName')), '2015-08-01-preview').api.id]"
+                }
+              }
+            }
+          },
+          "triggers": {
+            "manual": {
+              "inputs": {
+                "schema": {
+                  "properties": { },
+                  "required": [ ],
+                  "type": "object"
+                }
+              },
+              "type": "Manual"
+            }
+          }
+        },
+        "parameters": { }
+      }
+    },
+    {
+      "type": "Microsoft.Logic/workflows",
+      "apiVersion": "2015-08-01-preview",
+      "name": "[parameters('mailAppName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "JBMS Mailing App"
+      },
+      "properties": {
+        "sku": {
+          "name": "[parameters('workflowSkuName')]",
+          "plan": {
+            "id": "[concat(resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('svcPlanName'))]"
+          }
+        },
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2015-08-01-preview/workflowdefinition.json#",
+          "actions": {
+            "01_Get_Next_Messsage": {
+              "conditions": [ ],
+              "inputs": {
+                "body": {
+                  "Submitter": "[parameters('submitter')]"
+                },
+                "host": {
+                  "api": {
+                    "runtimeUrl": "https://logic-apis-australiaeast.azure-apim.net/apim/sql"
+                  },
+                  "connection": {
+                    "name": "@parameters('$connections')['jbmssql']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/datasets/default/procedures/@{encodeURIComponent(encodeURIComponent(string('[dbo].[sp_GetNextEmail]')))}"
+              },
+              "type": "ApiConnection"
+            },
+            "11_Send_Message_Via_Email": {
+              "conditions": [
+                {
+                  "expression": "@not(equals(body('01_Get_Next_Messsage')['ReturnCode'], 0))"
+                },
+                {
+                  "dependsOn": "01_Get_Next_Messsage"
+                }
+              ],
+              "inputs": {
+                "body": {
+                  "Attachments": [
+                    {
+                      "ContentData": "@{base64(body('01_Get_Next_Messsage')['ResultSets']['Table1'][0]['AttachmentDocument'])}",
+                      "ContentTransferEncoding": "base64",
+                      "ContentType": "text/plain",
+                      "FileName": "@{body('01_Get_Next_Messsage')['ResultSets']['Table1'][0]['MessageName']}"
+                    }
+                  ],
+                  "Body": "Hi, \n\n a new JBMS message was received. \n Please see attached file: @{body('01_Get_Next_Messsage')['ResultSets']['Table1'][0]['MessageName']} \n\nRegards, \nAzure",
+                  "Subject": "New JBMS message received (# @{body('01_Get_Next_Messsage')['ReturnCode']})",
+                  "To": "[parameters('submitterEmail')]"
+                },
+                "host": {
+                  "api": {
+                    "runtimeUrl": "https://logic-apis-australiaeast.azure-apim.net/apim/smtp"
+                  },
+                  "connection": {
+                    "name": "@parameters('$connections')['jbmssmtp']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/SendEmail"
+              },
+              "type": "ApiConnection"
+            },
+            "13_Call_JBMS_Email": {
+              "conditions": [
+                {
+                  "dependsOn": "11_Send_Message_Via_Email"
+                }
+              ],
+              "inputs": {
+                "body": "@body('01_Get_Next_Messsage')['ResultSets']",
+                "method": "POST",
+                "uri": "https://prod-07.australiaeast.logic.azure.com:443/workflows/a9226f3c4f71446690e360d18fbc55bd/triggers/manual/run?api-version=2015-08-01-preview&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=jQucIXsgdUuq7GOFu_L888I1JHiUUUf1mxLT_W7EAMY"
+              },
+              "type": "Http",
+              "until": {
+                "conditions": [
+                  {
+                    "expression": "@not(empty(string(action().outputs.body)))"
+                  }
+                ],
+                "limit": {
+                  "count": "3",
+                  "timeout": "PT10M"
+                }
+              }
+            },
+            "15_Response": {
+              "conditions": [
+                {
+                  "dependsOn": "11_Send_Message_Via_Email"
+                }
+              ],
+              "inputs": {
+                "body": "@body('01_Get_Next_Messsage')['ReturnCode']",
+                "statusCode": 200
+              },
+              "type": "Response"
+            },
+            "21_Response": {
+              "conditions": [
+                {
+                  "expression": "@equals(actions('11_Send_Message_Via_Email').status, 'Skipped')"
+                }
+              ],
+              "inputs": {
+                "body": "No more messages",
+                "statusCode": 200
+              },
+              "type": "Response"
+            }
+          },
+          "contentVersion": "1.0.0.0",
+          "outputs": {
+          },
+          "parameters": {
+            "$connections": {
+              "type": "Object",
+              "defaultValue": {
+                "jbmssmtp": {
+                  "connectionId": "[resourceId('Microsoft.Web/connections', parameters('smtpConnectionName'))]",
+                  "connectionName": "[parameters('smtpConnectionName')]",
+                  "id": "[reference(concat('Microsoft.Web/connections/', parameters('smtpConnectionName')), '2015-08-01-preview').api.id]"
+                },
+                "jbmssql": {
+                  "connectionId": "[resourceId('Microsoft.Web/connections', parameters('jbmsSqlConnectionName'))]",
+                  "connectionName": [ "jbmssql" ],
+                  "id": "[reference(concat('Microsoft.Web/connections/', parameters('jbmsSqlConnectionName')), '2015-08-01-preview').api.id]"
+                }
+              }
+            }
+          },
+          "triggers": {
+            "manual": {
+              "inputs": {
+                "schema": {
+                  "properties": { },
+                  "required": [ ],
+                  "type": "object"
+                }
+              },
+              "type": "Manual"
+            }
+          }
+        },
+        "parameters": { }
+      }
+    },
+    {
+      "name": "[parameters('jbmsSqlServerName')]",
+      "type": "Microsoft.Sql/servers",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2014-04-01-preview",
+      "dependsOn": [ ],
+      "tags": {
+        "displayName": "JBMS SQL Server"
+      },
+      "properties": {
+        "administratorLogin": "[parameters('jbmsSqlServerAdminLogin')]",
+        "administratorLoginPassword": "[parameters('jbmsSqlServerAdminLoginPassword')]"
+      },
+      "resources": [
+        {
+          "name": "AllowLocalIps",
+          "type": "firewallrules",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[concat('Microsoft.Sql/servers/', parameters('jbmsSqlServerName'))]"
+          ],
+          "properties": {
+            "startIpAddress": "[parameters('jbmsLocalIpAddress')]",
+            "endIpAddress": "[parameters('jbmsLocalIpAddress')]"
+          }
+        },
+        {
+          "name": "AllowAzureIps",
+          "type": "firewallrules",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[concat('Microsoft.Sql/servers/', parameters('jbmsSqlServerName'))]"
+          ],
+          "properties": {
+            "startIpAddress": "[parameters('jbmsAzureIpAddress')]",
+            "endIpAddress": "[parameters('jbmsAzureIpAddress')]"
+          }
+        },
+        {
+          "name": "AllowHomeIps",
+          "type": "firewallrules",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[concat('Microsoft.Sql/servers/', parameters('jbmsSqlServerName'))]"
+          ],
+          "properties": {
+            "startIpAddress": "121.98.230.178",
+            "endIpAddress": "121.98.230.178"
+          }
+        },
+        {
+          "name": "[parameters('jbmsdbName')]",
+          "type": "databases",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[parameters('jbmsSqlServerName')]"
+          ],
+          "tags": {
+            "displayName": "JBMS Database"
+          },
+          "properties": {
+            "collation": "[parameters('jbmsdbCollation')]",
+            "edition": "[parameters('jbmsdbEdition')]",
+            "maxSizeBytes": "1073741824",
+            "requestedServiceObjectiveName": "[parameters('jbmsdbRequestedServiceObjectiveName')]"
+          }
+        }
+      ]
+    }
+  ],
+  "variables": {
+  }
+}

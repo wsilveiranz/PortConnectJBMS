@@ -3,12 +3,3 @@ C:\Projects\PortConnect\JBMS\JBMS\bin\Debug\JBMS.dll
 C:\Projects\PortConnect\JBMS\JBMS\bin\Debug\JBMS.pdb
 C:\Projects\PortConnect\JBMS\JBMS\obj\Debug\JBMS.dll
 C:\Projects\PortConnect\JBMS\JBMS\obj\Debug\JBMS.pdb
-C:\dev\PortConnectJBMS\JBMS\bin\Debug\JBMS.dacpac
-C:\dev\PortConnectJBMS\JBMS\bin\Debug\JBMS.dll
-C:\dev\PortConnectJBMS\JBMS\bin\Debug\JBMS.pdb
-C:\dev\PortConnectJBMS\JBMS\obj\Debug\Model.xml
-C:\dev\PortConnectJBMS\JBMS\obj\Debug\refactor.xml
-C:\dev\PortConnectJBMS\JBMS\obj\Debug\postdeploy.sql
-C:\dev\PortConnectJBMS\JBMS\obj\Debug\predeploy.sql
-C:\dev\PortConnectJBMS\JBMS\obj\Debug\JBMS.dll
-C:\dev\PortConnectJBMS\JBMS\obj\Debug\JBMS.pdb
