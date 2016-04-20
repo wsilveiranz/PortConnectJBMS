@@ -21,7 +21,7 @@
       "value": "jbmssql"
     },
     "jbmsSqlServerName": {
-      "value": "jbmssqlserver3"
+      "value": "jbmssqlserver"
     },
     "jbmsSqlServerPort": {
       "value": "1433"

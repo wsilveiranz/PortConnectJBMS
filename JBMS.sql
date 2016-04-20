@@ -336,6 +336,9 @@ PRIMARY KEY CLUSTERED
 
 /*
 
+use JBMSdb
+go
+
 insert into [dbo].[JBMSExtMessage]
 ([customerReference], [documentSize], [mailbox], [mailboxMsgId], [messageName], [partner], [receivedDate], [Status], [href], [value])
 values 

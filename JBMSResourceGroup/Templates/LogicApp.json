@@ -211,7 +211,7 @@
       "name": "[parameters('logicAppName')]",
       "location": "[resourceGroup().location]",
       "tags": {
-        "displayName": "JBMS LogicApp"
+        "displayName": "JBMS Logic App"
       },
       "properties": {
         "sku": {
@@ -231,7 +231,7 @@
                 },
                 "host": {
                   "api": {
-                    "runtimeUrl": "https://logic-apis-australiaeast.azure-apim.net/apim/sql"
+                    "runtimeUrl": "[concat('https://logic-apis-', resourceGroup().location, '.azure-apim.net/apim/sql')]"
                   },
                   "connection": {
                     "name": "@parameters('$connections')['jbmssql']['connectionId']"
@@ -257,7 +257,7 @@
                 },
                 "host": {
                   "api": {
-                    "runtimeUrl": "https://logic-apis-australiaeast.azure-apim.net/apim/sql"
+                    "runtimeUrl": "[concat('https://logic-apis-', resourceGroup().location, '.azure-apim.net/apim/sql')]"
                   },
                   "connection": {
                     "name": "@parameters('$connections')['jbmssql']['connectionId']"
@@ -292,7 +292,7 @@
                 },
                 "host": {
                   "api": {
-                    "runtimeUrl": "https://logic-apis-australiaeast.azure-apim.net/apim/sql"
+                    "runtimeUrl": "[concat('https://logic-apis-', resourceGroup().location, '.azure-apim.net/apim/sql')]"
                   },
                   "connection": {
                     "name": "@parameters('$connections')['jbmssql']['connectionId']"
@@ -320,7 +320,7 @@
                 },
                 "host": {
                   "api": {
-                    "runtimeUrl": "https://logic-apis-australiaeast.azure-apim.net/apim/sql"
+                    "runtimeUrl": "[concat('https://logic-apis-', resourceGroup().location, '.azure-apim.net/apim/sql')]"
                   },
                   "connection": {
                     "name": "@parameters('$connections')['jbmssql']['connectionId']"
@@ -383,7 +383,7 @@
                 },
                 "host": {
                   "api": {
-                    "runtimeUrl": "https://logic-apis-australiaeast.azure-apim.net/apim/sql"
+                    "runtimeUrl": "[concat('https://logic-apis-', resourceGroup().location, '.azure-apim.net/apim/sql')]"
                   },
                   "connection": {
                     "name": "@parameters('$connections')['jbmssql']['connectionId']"
@@ -411,14 +411,8 @@
           "outputs": { },
           "parameters": {
             "$connections": {
-              "type": "Object",
-              "defaultValue": {
-                "jbmssql": {
-                  "connectionId": "[resourceId('Microsoft.Web/connections', parameters('jbmsSqlConnectionName'))]",
-                  "connectionName": [ "jbmssql" ],
-                  "id": "[reference(concat('Microsoft.Web/connections/', parameters('jbmsSqlConnectionName')), '2015-08-01-preview').api.id]"
-                }
-              }
+              "defaultValue": { },
+              "type": "Object"
             }
           },
           "triggers": {
@@ -434,7 +428,18 @@
             }
           }
         },
-        "parameters": { }
+        "parameters": {
+          "$connections": {
+            "type": "Object",
+            "value": {
+              "jbmssql": {
+                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('jbmsSqlConnectionName'))]",
+                "connectionName": [ "jbmssql" ],
+                "id": "[reference(concat('Microsoft.Web/connections/', parameters('jbmsSqlConnectionName')), '2015-08-01-preview').api.id]"
+              }
+            }
+          }
+        }
       }
     },
     {
@@ -463,7 +468,7 @@
                 },
                 "host": {
                   "api": {
-                    "runtimeUrl": "https://logic-apis-australiaeast.azure-apim.net/apim/sql"
+                    "runtimeUrl": "[concat('https://logic-apis-', resourceGroup().location, '.azure-apim.net/apim/sql')]"
                   },
                   "connection": {
                     "name": "@parameters('$connections')['jbmssql']['connectionId']"
@@ -499,7 +504,7 @@
                 },
                 "host": {
                   "api": {
-                    "runtimeUrl": "https://logic-apis-australiaeast.azure-apim.net/apim/smtp"
+                    "runtimeUrl": "[concat('https://logic-apis-', resourceGroup().location, '.azure-apim.net/apim/smtp')]"
                   },
                   "connection": {
                     "name": "@parameters('$connections')['jbmssmtp']['connectionId']"
@@ -564,19 +569,8 @@
           },
           "parameters": {
             "$connections": {
-              "type": "Object",
-              "defaultValue": {
-                "jbmssmtp": {
-                  "connectionId": "[resourceId('Microsoft.Web/connections', parameters('smtpConnectionName'))]",
-                  "connectionName": "[parameters('smtpConnectionName')]",
-                  "id": "[reference(concat('Microsoft.Web/connections/', parameters('smtpConnectionName')), '2015-08-01-preview').api.id]"
-                },
-                "jbmssql": {
-                  "connectionId": "[resourceId('Microsoft.Web/connections', parameters('jbmsSqlConnectionName'))]",
-                  "connectionName": [ "jbmssql" ],
-                  "id": "[reference(concat('Microsoft.Web/connections/', parameters('jbmsSqlConnectionName')), '2015-08-01-preview').api.id]"
-                }
-              }
+              "defaultValue": { },
+              "type": "Object"
             }
           },
           "triggers": {
@@ -592,7 +586,23 @@
             }
           }
         },
-        "parameters": { }
+        "parameters": {
+          "$connections": {
+            "type": "Object",
+            "value": {
+              "jbmssmtp": {
+                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('smtpConnectionName'))]",
+                "connectionName": "[parameters('smtpConnectionName')]",
+                "id": "[reference(concat('Microsoft.Web/connections/', parameters('smtpConnectionName')), '2015-08-01-preview').api.id]"
+              },
+              "jbmssql": {
+                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('jbmsSqlConnectionName'))]",
+                "connectionName": [ "jbmssql" ],
+                "id": "[reference(concat('Microsoft.Web/connections/', parameters('jbmsSqlConnectionName')), '2015-08-01-preview').api.id]"
+              }
+            }
+          }
+        }
       }
     },
     {
