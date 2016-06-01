@@ -123,6 +123,10 @@
       "type": "string",
       "minLength": 1
     },
+    "jbmsHomeIpAddress": {
+      "type": "string",
+      "minLength": 1
+    },
     "smtpConnectionName": {
       "type": "string",
       "minLength": 1
@@ -146,25 +150,17 @@
     "smtpPassword": {
       "type": "string",
       "minLength": 1
+    },
+    "apiUri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "apiSwagger": {
+      "type": "string",
+      "minLength": 1
     }
   },
   "resources": [
-    {
-      "apiVersion": "2015-08-01",
-      "name": "[parameters('svcPlanName')]",
-      "type": "Microsoft.Web/serverfarms",
-      "location": "[resourceGroup().location]",
-      "tags": {
-        "displayName": "JBMS Service Plan"
-      },
-      "sku": {
-        "name": "[parameters('skuName')]",
-        "capacity": "[parameters('skuCapacity')]"
-      },
-      "properties": {
-        "name": "[parameters('svcPlanName')]"
-      }
-    },
     {
       "type": "Microsoft.Web/connections",
       "apiVersion": "2015-08-01-preview",
@@ -179,7 +175,7 @@
         },
         "displayName": "[parameters('jbmsSqlConnectionName')]",
         "parameterValues": {
-          "sqlConnectionString": "[concat('Server=tcp:', parameters('jbmsSqlServerName'), '.database.windows.net,', parameters('jbmsSqlServerPort'), ';Database=', parameters('jbmsdbName'), ';User ID=', parameters('jbmsSqlServerAdminLogin'), '@', parameters('jbmsSqlServerName'), ';Password=', parameters('jbmsSqlServerAdminLoginPassword'), ';Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
+          "sqlConnectionString": "Server=tcp:portconnectt.database.windows.net,1433;Data Source=portconnectt.database.windows.net;Database=JBMSRepository;Persist Security Info=True;User ID=admportconnectt;Password=P0rtc0nn3ct;Pooling=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=60;"
         }
       }
     },
@@ -252,26 +248,23 @@
                 }
               ],
               "inputs": {
-                "body": {
-                  "PrevMessageID": "@{body('01_Get_Next_Polling_Item')['ResultSets']['Table1'][0]['MessageID']}"
+                "method": "get",
+                "queries": {
+                  "mailboxmsgid": "@{body('01_Get_Next_Polling_Item')['ResultSets']['Table1'][0]['MessageID']}",
+                  "submitter": "[parameters('submitter')]"
                 },
-                "host": {
-                  "api": {
-                    "runtimeUrl": "[concat('https://logic-apis-', resourceGroup().location, '.azure-apim.net/apim/sql')]"
-                  },
-                  "connection": {
-                    "name": "@parameters('$connections')['jbmssql']['connectionId']"
-                  }
-                },
-                "method": "post",
-                "path": "/datasets/default/procedures/@{encodeURIComponent(encodeURIComponent(string('[dbo].[sp_GetExtMessage]')))}"
+                "uri": "[parameters('apiUri')]"
               },
-              "type": "ApiConnection"
+              "metadata": {
+                "apiDefinitionUrl": "[parameters('apiSwagger')]",
+                "swaggerSource": "custom"
+              },
+              "type": "Http"
             },
             "11_Insert_Message_Item": {
               "conditions": [
                 {
-                  "expression": "@not(equals(body('03_Get_Next_Message_Item')['ReturnCode'], 0))"
+                  "expression": "@not(equals(body('01_Get_Next_Polling_Item')['ReturnCode'], 0))"
                 },
                 {
                   "dependsOn": "03_Get_Next_Message_Item"
@@ -279,16 +272,16 @@
               ],
               "inputs": {
                 "body": {
-                  "MessageID": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['mailboxMsgId']}",
-                  "CustomerReference": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['customerReference']}",
-                  "DocumentID": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['docId']}",
-                  "Mailbox": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['mailbox']}",
-                  "MessageName": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['messageName']}",
-                  "PartnerID": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['partner']}",
-                  "ReceivedDateTime": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['receivedDate']}",
-                  "Submitter": "[parameters('submitter')]",
-                  "href": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['href']}",
-                  "AttachmentDocument": "@{decodeBase64(body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['value'])}"
+                  "AttachmentDocument": "@{decodeBase64(body('03_Get_Next_Message_Item')['attachment']['valueField'])}",
+                  "CustomerReference": "@{body('03_Get_Next_Message_Item')['RequestResponseResponse']['customerReferenceField']}",
+                  "DocumentID": "@{body('03_Get_Next_Message_Item')['RequestResponseResponse']['docIdField']}",
+                  "Mailbox": "@{body('03_Get_Next_Message_Item')['RequestResponseResponse']['mailboxField']}",
+                  "MessageID": "@{body('03_Get_Next_Message_Item')['RequestResponseResponse']['mailboxMsgIdField']}",
+                  "MessageName": "@{body('03_Get_Next_Message_Item')['RequestResponseResponse']['messageNameField']}",
+                  "PartnerID": "@{body('03_Get_Next_Message_Item')['RequestResponseResponse']['partnerField']}",
+                  "ReceivedDateTime": "@{body('03_Get_Next_Message_Item')['RequestResponseResponse']['receivedDateField']}",
+                  "Submitter": "PORTCONNECT",
+                  "href": "@{body('03_Get_Next_Message_Item')['attachment']['hrefField']}"
                 },
                 "host": {
                   "api": {
@@ -311,10 +304,10 @@
               ],
               "inputs": {
                 "body": {
-                  "EntryID": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['mailboxMsgId']}",
+                  "EntryID": "@{body('03_Get_Next_Message_Item')['RequestResponseResponse']['mailboxMsgIdField']}",
                   "LastUpdatedDateTime": "@{body('01_Get_Next_Polling_Item')['ResultSets']['Table1'][0]['CurrentDateTime']}",
-                  "MessageID": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['mailboxMsgId']}",
-                  "SenderReference": "@{body('03_Get_Next_Message_Item')['ResultSets']['Table1'][0]['customerReference']}",
+                  "MessageID": "@{body('03_Get_Next_Message_Item')['RequestResponseResponse']['mailboxMsgIdField']}",
+                  "SenderReference": "@{body('03_Get_Next_Message_Item')['RequestResponseResponse']['customerReferenceField']}",
                   "Status": "Processed",
                   "Submitter": "@{body('01_Get_Next_Polling_Item')['ResultSets']['Table1'][0]['Submitter']}"
                 },
@@ -361,7 +354,7 @@
                 }
               ],
               "inputs": {
-                "body": "@body('03_Get_Next_Message_Item')['ReturnCode']",
+                "body": "@body('01_Get_Next_Polling_Item')['ReturnCode']",
                 "statusCode": 200
               },
               "type": "Response"
@@ -401,7 +394,7 @@
                 }
               ],
               "inputs": {
-                "body": "@body('03_Get_Next_Message_Item')['ReturnCode']",
+                "body": "@body('01_Get_Next_Polling_Item')['ReturnCode']",
                 "statusCode": 200
               },
               "type": "Response"
@@ -604,79 +597,6 @@
           }
         }
       }
-    },
-    {
-      "name": "[parameters('jbmsSqlServerName')]",
-      "type": "Microsoft.Sql/servers",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "2014-04-01-preview",
-      "dependsOn": [ ],
-      "tags": {
-        "displayName": "JBMS SQL Server"
-      },
-      "properties": {
-        "administratorLogin": "[parameters('jbmsSqlServerAdminLogin')]",
-        "administratorLoginPassword": "[parameters('jbmsSqlServerAdminLoginPassword')]"
-      },
-      "resources": [
-        {
-          "name": "AllowLocalIps",
-          "type": "firewallrules",
-          "location": "[resourceGroup().location]",
-          "apiVersion": "2014-04-01-preview",
-          "dependsOn": [
-            "[concat('Microsoft.Sql/servers/', parameters('jbmsSqlServerName'))]"
-          ],
-          "properties": {
-            "startIpAddress": "[parameters('jbmsLocalIpAddress')]",
-            "endIpAddress": "[parameters('jbmsLocalIpAddress')]"
-          }
-        },
-        {
-          "name": "AllowAzureIps",
-          "type": "firewallrules",
-          "location": "[resourceGroup().location]",
-          "apiVersion": "2014-04-01-preview",
-          "dependsOn": [
-            "[concat('Microsoft.Sql/servers/', parameters('jbmsSqlServerName'))]"
-          ],
-          "properties": {
-            "startIpAddress": "[parameters('jbmsAzureIpAddress')]",
-            "endIpAddress": "[parameters('jbmsAzureIpAddress')]"
-          }
-        },
-        {
-          "name": "AllowHomeIps",
-          "type": "firewallrules",
-          "location": "[resourceGroup().location]",
-          "apiVersion": "2014-04-01-preview",
-          "dependsOn": [
-            "[concat('Microsoft.Sql/servers/', parameters('jbmsSqlServerName'))]"
-          ],
-          "properties": {
-            "startIpAddress": "121.98.230.178",
-            "endIpAddress": "121.98.230.178"
-          }
-        },
-        {
-          "name": "[parameters('jbmsdbName')]",
-          "type": "databases",
-          "location": "[resourceGroup().location]",
-          "apiVersion": "2014-04-01-preview",
-          "dependsOn": [
-            "[parameters('jbmsSqlServerName')]"
-          ],
-          "tags": {
-            "displayName": "JBMS Database"
-          },
-          "properties": {
-            "collation": "[parameters('jbmsdbCollation')]",
-            "edition": "[parameters('jbmsdbEdition')]",
-            "maxSizeBytes": "1073741824",
-            "requestedServiceObjectiveName": "[parameters('jbmsdbRequestedServiceObjectiveName')]"
-          }
-        }
-      ]
     }
   ],
   "variables": {

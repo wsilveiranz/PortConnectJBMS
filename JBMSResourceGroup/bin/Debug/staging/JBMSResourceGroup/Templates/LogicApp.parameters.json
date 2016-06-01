@@ -6,34 +6,34 @@
       "value": "PORTCONNECT"
     },
     "submitterEmail": {
-      "value": "charl.deklerk@theta.co.nz"
+      "value": "wagner.silveira@theta.co.nz"
     },
     "logicAppName": {
-      "value": "JBMSlogic"
+      "value": "JBMSPollingManagerTest"
     },
     "mailAppName": {
-      "value": "JBMSMail"
+      "value": "JBMSMailManagerTest"
     },
     "svcPlanName": {
-      "value": "ServicePlan"
+      "value": "JBMSWebAppServiceTest"
     },
     "jbmsSqlConnectionName": {
-      "value": "jbmssql"
+      "value": "jbmssqltst"
     },
     "jbmsSqlServerName": {
-      "value": "jbmssqlserver"
+      "value": "portconnectt.database.windows.net"
     },
     "jbmsSqlServerPort": {
       "value": "1433"
     },
     "jbmsdbName": {
-      "value": "JBMSdb"
+      "value": "JBMSRepository"
     },
     "jbmsSqlServerAdminLogin": {
-      "value": "thetauser"
+      "value": "admportconnectt"
     },
     "jbmsSqlServerAdminLoginPassword": {
-      "value": "P@ssw0rd"
+      "value": "P0rtc0nn3ct"
     },
     "jbmsLocalIpAddress": {
       "value": "210.54.148.61"
@@ -42,13 +42,13 @@
       "value": "40.126.251.213"
     },
     "smtpConnectionName": {
-      "value": "jbmssmtp"
+      "value": "jbmssmtptst"
     },
     "smtpServerAddress": {
       "value": "smtp.office365.com"
     },
     "smtpUserName": {
-      "value": "charl.deklerk@theta.co.nz"
+      "value": "wagner.silveira@theta.co.nz"
     },
     "smtpPort": {
       "value": "587"
@@ -57,7 +57,16 @@
       "value": "True"
     },
     "smtpPassword": {
-      "value": "Theta@1604"
-    }
+      "value": "Theta$95"
+    },
+      "jbmsHomeIpAddress": {
+          "value": "210.54.148.61"
+      },
+      "apiUri": {
+          "value": "https://jbmsproxyapi.azurewebsites.net/api/jbmsproxy"
+      },
+      "apiSwagger": {
+          "value": "http://jbmsproxyapi.azurewebsites.net:80/swagger/docs/v1"
+      }
   }
 }
